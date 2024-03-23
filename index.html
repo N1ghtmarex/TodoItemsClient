@@ -148,18 +148,66 @@
           .then(data => data.json())
           .then(response => { 
             const title = document.createElement('span');
+            const block = document.getElementById('getById');
             title.textContent = response.name;
+
+            let deleteIcon = document.createElement('span');
+            deleteIcon.textContent = '❌'
+            block.append(deleteIcon);
+
+            let checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = 'check';
 
             if (response.isComplete)
             {
               title.style.color = "green";
+              checkbox.checked = true;
             }
             else
             {
               title.style.color = "red";
             }
 
-            document.getElementById('getById').append(title);
+            deleteIcon.addEventListener('click', function() {
+              fetch(url, {
+                method: 'DELETE',
+                headers: {
+                  'Content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                  id: response.id,
+                })
+              })
+              .then(location.reload())
+            })
+
+            checkbox.addEventListener('click', function() {
+              if (checkbox.checked)
+              {
+                title.style.color = 'green';
+              }
+              else
+              {
+                title.style.color = 'red';
+              }
+              
+              fetch(url, {
+                method: 'PUT',
+                headers: {
+                  'Content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                  id: response.id,
+                  isComplete: checkbox.checked
+                })
+              });
+  
+            })
+
+            block.append(checkbox);
+
+            block.append(title);
            });
         }
       })
